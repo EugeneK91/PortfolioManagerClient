@@ -117,7 +117,7 @@ $(function () {
                 portfolioManager.displayItems("#items > tbody", items);
             });
     });
-
+//
     // load all items on startup
     portfolioManager.loadItems()
         .done(function(items) {
