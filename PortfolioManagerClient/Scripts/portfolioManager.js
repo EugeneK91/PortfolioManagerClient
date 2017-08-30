@@ -72,18 +72,20 @@
     return {
         loadItems: loadPortfolioItems,
         displayItems: displayPortfolioItems,
+        displayItem: appendRow,
         createItem: createPortfolio,
         deleteItem: deletePortfolioItem,
         updateItem: updatePortfolioItem
     };
 }();
 
-
 $(function () {
     // add new portfolio item button click handler
     $("#newCreate").click(function() {
         var symbol = $('#symbol')[0].value;
         var sharesNumber = $('#sharesNumber')[0].value;
+        var item = { ItemId: 0, SharesNumber: sharesNumber, Symbol: symbol };
+        portfolioManager.displayItem("#items > tbody", item);
 
         portfolioManager.createItem(symbol, sharesNumber)
             .then(portfolioManager.loadItems)
@@ -98,6 +100,10 @@ $(function () {
         var itemId = tr.attr("data-id");
         var symbol = $('#symbol')[0].value;
         var sharesNumber = $('#sharesNumber')[0].value;
+        tr.children()[0].innerText = symbol;
+        tr.children()[1].innerText = sharesNumber;
+
+
         //var symbol = tr.find('.symbol').text();
         //var sharesNumber = tr.find('.sharesNumber').text();
         
@@ -111,6 +117,8 @@ $(function () {
     // bind delete button click for future rows
     $('#items > tbody').on('click', '.delete-button', function() {
         var itemId = $(this).parent().parent().attr("data-id");
+        $(this).parent().parent().remove();
+
         portfolioManager.deleteItem(itemId)
             .then(portfolioManager.loadItems)
             .done(function(items) {
@@ -124,7 +132,10 @@ $(function () {
             portfolioManager.displayItems("#items > tbody", items);
 
             $.getJSON("api/PortfolioItems/GetRemote", function () {
-                portfolioManager.displayItems("#items > tbody", items);
+                portfolioManager.loadItems()
+                    .done(function (items) {
+                        portfolioManager.displayItems("#items > tbody", items);
+                    });
             });
            
         });
