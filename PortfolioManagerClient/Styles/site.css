@@ -1,3 +1,32 @@
 ﻿#newName {
     width: 100%
 }
+body {
+    background-color: aliceblue !important;
+    color: cadetblue !important;
+}
+table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+}
+thead tr th {
+    height: 60px;
+    font-size: 20px;
+}
+tr td {
+    height: 40px;    
+}
+th, td {
+    text-align: left;
+    padding: 10px;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(0, 188, 212, 0.23);
+}
+.btn {
+    margin: 0px 20px;
+    padding: 5px 20px !important;
+    color: gainsboro !important;
+}
