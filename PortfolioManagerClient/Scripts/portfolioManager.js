@@ -46,8 +46,12 @@
 
     // starts loading portfolio items from server.
     // @returns a promise.
-    var loadPortfolioItems = function() {
-        return $.getJSON("/api/PortfolioItems/GetLocal");
+    var loadPortfolioItems = function () {
+        $.showLoading({ name: 'circle-fade' });
+        return $.getJSON("/api/PortfolioItems/GetLocal").done(function () {
+
+            $.hideLoading()
+        });
     };
 
     // starts creating a portfolio item on the server.
@@ -138,7 +142,6 @@ function loadChart(symbol) {
     contentType: 'application/json',
     data: { 'symbol': symbol },//
     success: function (response) {
-        alert(response == null)
         if (response == null)
             $('#chartContainer').append("<center><h1>Data Not Found</h1></center>")
         createChart(response);
@@ -172,7 +175,7 @@ function createChart(items) {
 }
 
 $(function () {
-    
+   
     // add new portfolio item button click handler
     $("#newCreate").click(function() {
         var symbol = $('#symbol')[0].value;

@@ -97,6 +97,20 @@
     <Content Include="Scripts\jquery-3.1.0.min.js" />
     <Content Include="Scripts\jquery-3.1.0.slim.js" />
     <Content Include="Scripts\jquery-3.1.0.slim.min.js" />
+    <Content Include="Scripts\jQuerySpinners\.gitignore" />
+    <Content Include="Scripts\jQuerySpinners\dist\jquery.loading.min.js" />
+    <Content Include="Scripts\jQuerySpinners\dist\loading.min.css" />
+    <Content Include="Scripts\jQuerySpinners\dist\loading.min.js" />
+    <Content Include="Scripts\jQuerySpinners\doc.html" />
+    <Content Include="Scripts\jQuerySpinners\Gruntfile.js" />
+    <Content Include="Scripts\jQuerySpinners\index.html" />
+    <Content Include="Scripts\jQuerySpinners\src\jquery.loading.js" />
+    <Content Include="Scripts\jQuerySpinners\src\loading.css" />
+    <Content Include="Scripts\jQuerySpinners\src\loading.js" />
+    <Content Include="Scripts\jQuerySpinners\stylesheets\ddown.svg" />
+    <Content Include="Scripts\jQuerySpinners\stylesheets\github-light.css" />
+    <Content Include="Scripts\jQuerySpinners\stylesheets\normalize.css" />
+    <Content Include="Scripts\jQuerySpinners\stylesheets\stylesheet.css" />
     <Content Include="Scripts\morris.js-0.5.1\.gitignore" />
     <Content Include="Scripts\morris.js-0.5.1\examples\area-as-line.html" />
     <Content Include="Scripts\morris.js-0.5.1\examples\area.html" />
@@ -189,6 +203,10 @@
     <Content Include="Scripts\morris.js-0.5.1\spec\lib\parse_time_spec.coffee" />
     <Content Include="Scripts\morris.js-0.5.1\spec\support\placeholder.coffee" />
     <Content Include="Scripts\morris.js-0.5.1\spec\viz\run.sh" />
+    <Content Include="Scripts\jQuerySpinners\LICENSE" />
+    <Content Include="Scripts\jQuerySpinners\package.json" />
+    <Content Include="Scripts\jQuerySpinners\params.json" />
+    <Content Include="Scripts\jQuerySpinners\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
