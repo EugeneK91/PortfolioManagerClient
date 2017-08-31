@@ -14,6 +14,7 @@ namespace ORM
 
 
         public virtual DbSet<PortfolioItem> PortfolioItems { get; set; }
+        public virtual DbSet<PortfolioOperation> PortfolioOperations { get; set; }
 
     }
 

@@ -12,6 +12,7 @@ namespace Proxy
     public class MediatorService { 
 
         private IRepository _repositoryService;
+        private OperationRepository _operationRepository;
         private PortfolioItemsService _remoteService;
         private int _userId;
 
@@ -19,12 +20,17 @@ namespace Proxy
         {
             _remoteService = new PortfolioItemsService();
             _repositoryService = new Repository();
+            _operationRepository = new OperationRepository();
             _userId = userId;
         }
 
         public void Create(PortfolioItem item)
         {
             item.UserId = _userId;
+            PortfolioOperation opItem = new PortfolioOperation(item);
+            opItem.Operation = "create";
+            opItem = _operationRepository.Create(opItem);            
+
             try
             {
                 _remoteService.CreateItem(item);
@@ -33,10 +39,15 @@ namespace Proxy
 
             var newItem = _remoteService.GetItems(_userId).FirstOrDefault(c => c.Symbol.Equals(item.Symbol));
             _repositoryService.Create(newItem);
+
+            _operationRepository.Delete(opItem.Id);
         }
 
         public void Edit(PortfolioItem item)
         {
+            PortfolioOperation opItem = new PortfolioOperation(item);
+            opItem.Operation = "edit";
+            opItem = _operationRepository.Create(opItem);
 
             item.UserId = _userId;
             try
@@ -45,17 +56,25 @@ namespace Proxy
                 _repositoryService.Edit(item);
             }
             catch { }
-            
+
+            _operationRepository.Delete(opItem.Id);
         }
 
         public void Delete(int id)
         {
+            var item =_repositoryService.GetAll().Where(c=> c.ItemId == id).FirstOrDefault();
+            PortfolioOperation opItem = new PortfolioOperation(item);            
+            opItem.Operation = "delete";
+            opItem = _operationRepository.Create(opItem);
+
             try
             {
                 _remoteService.DeleteItem(id);
                 _repositoryService.Delete(id);
             }
             catch { }
+
+            _operationRepository.Delete(opItem.Id);
         }
 
 
@@ -91,6 +110,10 @@ namespace Proxy
                 _repositoryService.Create(item);
             }
 
+        }
+        public IList<PortfolioOperation> GetOperations()
+        {
+            return _operationRepository.GetAll().ToList();
         }
     }
 

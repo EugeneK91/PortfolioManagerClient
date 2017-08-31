@@ -3,42 +3,42 @@
     // appends a row to the portfolio items table.
     // @parentSelector: selector to append a row to.
     // @obj: portfolio item object to append.
-    var appendRow = function(parentSelector, obj,price) {
+    var appendRow = function (parentSelector, obj, price) {
         var tr = $("<tr data-id='" + obj.ItemId + "'></tr>");
         tr.append("<td class='name' >" + obj.Symbol + "</td>");
         tr.append("<td class='name' >" + obj.SharesNumber + "</td>");
         tr.append("<td class='name' >" + price + "</td>");
         tr.append("<td class='name' >" + price * obj.SharesNumber + "</td>");
-        tr.append("<td><input type='button' class='update-button' value='Update' /><input type='button' class='delete-button' value='Delete' /></td>");
+        tr.append("<td><input type='button' class='update-button btn btn-info' value='Update' /><input type='button' class='delete-button btn btn-primary' value='Delete' /></td>");
         $(parentSelector).append(tr);
     }
 
     // adds all portfolio items as rows (deletes all rows before).
     // @parentSelector: selector to append a row to.
     // @tasks: array of portfolio items to append.
-    var displayPortfolioItems = function(parentSelector, portfolioItems) {
+    var displayPortfolioItems = function (parentSelector, portfolioItems) {
         $(parentSelector).empty();
-        
+
         var symbols = '';
-        
+
         for (var i = 0; i < portfolioItems.length; i++) {
             symbols += portfolioItems[i].Symbol + '+';
         }
         symbols = symbols.slice(0, -1)
-        var prices='';
+        var prices = '';
         $.ajax(
-        {
-            async: false,
-            url: "/api/PortfolioItems/GetStocks",
-            contentType: 'application/json',
-            data: { 'symbols': symbols },
-            success: function (response) {
-                prices = response;
-            }
-        });
+            {
+                async: false,
+                url: "/api/PortfolioItems/GetStocks",
+                contentType: 'application/json',
+                data: { 'symbols': symbols },
+                success: function (response) {
+                    prices = response;
+                }
+            });
 
         $.each(portfolioItems, function (i, item) {
-        
+
             appendRow(parentSelector, item, prices[i]);
         });
     };
@@ -100,19 +100,48 @@
         updateItem: updatePortfolioItem
     };
 }();
+var operationManager = function () {
+
+    // appends a row to the portfolio items table.
+    // @parentSelector: selector to append a row to.
+    // @obj: portfolio item object to append.
+    var appendOpearationRow = function (parentSelector, obj) {
+        var tr = $("<tr data-id='" + obj.ItemId + "'></tr>");
+        tr.append("<td class='name' >" + obj.Operation + " " + obj.Symbol + " " + obj.SharesNumber+"</td>");        
+        $(parentSelector).append(tr);
+
+    };
+    var displayOperations = function (parentSelector, portfolioItems) {
+        $(parentSelector).empty();
+        $.each(portfolioItems, function (i, item) {
+            appendOpearationRow(parentSelector, item);
+        });
+    };
+    var loadOperations = function () {
+        return $.getJSON("/api/PortfolioItems/GetOperation");
+    };
+    return {
+        loadItems: loadOperations,
+        displayItems: displayOperations,
+        displayItem: appendOpearationRow
+    };
+}();
 
 $(function () {
     // add new portfolio item button click handler
     $("#newCreate").click(function() {
         var symbol = $('#symbol')[0].value;
         var sharesNumber = $('#sharesNumber')[0].value;
-        var item = { ItemId: 0, SharesNumber: sharesNumber, Symbol: symbol };
-        portfolioManager.displayItem("#items > tbody", item);
+        var item = { Operation: "create", SharesNumber: sharesNumber, Symbol: symbol };
+        operationManager.displayItem("#operation > tbody", item);
 
         portfolioManager.createItem(symbol, sharesNumber)
-            .then(portfolioManager.loadItems)
-            .done(function(items) {
-                portfolioManager.displayItems("#items > tbody", items);
+            .then(operationManager.loadItems).done
+            (function (items) {
+                operationManager.displayItems("#operation > tbody", items);
+                portfolioManager.loadItems().done(function (data)
+                {    portfolioManager.displayItems("#items > tbody", data);
+                });                   
             });
     });
 
@@ -122,29 +151,42 @@ $(function () {
         var itemId = tr.attr("data-id");
         var symbol = $('#symbol')[0].value;
         var sharesNumber = $('#sharesNumber')[0].value;
-        tr.children()[0].innerText = symbol;
-        tr.children()[1].innerText = sharesNumber;
+
+        var item = { Operation: "update", SharesNumber: sharesNumber, Symbol: symbol };
+        operationManager.displayItem("#operation > tbody", item);
+        //tr.children()[0].innerText = symbol;
+        //tr.children()[1].innerText = sharesNumber;
 
 
         //var symbol = tr.find('.symbol').text();
         //var sharesNumber = tr.find('.sharesNumber').text();
         
         portfolioManager.updateItem(itemId, symbol, sharesNumber)
-            .then(portfolioManager.loadItems)
-            .done(function (items) {
-                portfolioManager.displayItems("#items > tbody", items);
+            .then(operationManager.loadItems).done
+            (function (items) {
+                operationManager.displayItems("#operation > tbody", items);
+                portfolioManager.loadItems().done(function (data) {
+                    portfolioManager.displayItems("#items > tbody", data);
+                });
             });
+
     });
 
     // bind delete button click for future rows
-    $('#items > tbody').on('click', '.delete-button', function() {
-        var itemId = $(this).parent().parent().attr("data-id");
-        $(this).parent().parent().remove();
+    $('#items > tbody').on('click', '.delete-button', function () {
+        var tr = $(this).parent().parent();
+        var itemId = tr.attr("data-id");
+        
+         var item = { Operation: "delete", SharesNumber: tr.children()[1].innerText, Symbol: tr.children()[0].innerText};
+        operationManager.displayItem("#operation > tbody", item);
 
         portfolioManager.deleteItem(itemId)
-            .then(portfolioManager.loadItems)
-            .done(function(items) {
-                portfolioManager.displayItems("#items > tbody", items);
+            .then(operationManager.loadItems).done
+            (function (items) {
+                operationManager.displayItems("#operation > tbody", items);
+                portfolioManager.loadItems().done(function (data) {
+                    portfolioManager.displayItems("#items > tbody", data);
+                });
             });
     });
 
