@@ -89,7 +89,7 @@ namespace Proxy
             var localList = _repositoryService.GetAll();
 
             var deletedItemList = localList.Except(remoteList,new PortfolioComparer()).ToList();
-            var addedItemList = remoteList.Except(localList, new PortfolioComparer());
+            var addedItemList = remoteList.Except(localList, new PortfolioComparer()).ToList();
 
             foreach (var item in deletedItemList)
             { _repositoryService.Delete(item.ItemId.Value); }
