@@ -4,6 +4,7 @@ using PortfolioManagerClient.Models;
 using PortfolioManagerClient.Services;
 using Proxy;
 using PortfolioManagerClient.Converters;
+using System.Net;
 
 namespace PortfolioManagerClient.Controllers
 {
@@ -47,6 +48,24 @@ namespace PortfolioManagerClient.Controllers
              _mediatorService.GetAllRemote();//.PortfolioItemsToPortfolioItemViewModels();
         }
 
+        [Route("api/PortfolioItems/GetStocks")]
+        public List<string> GetStocks(string symbols)
+        {
+            string csvData = string.Empty;
+
+            using (WebClient web = new WebClient())
+            {
+                var t = $"http://finance.yahoo.com/d/quotes.csv?s={symbols}&f=sl1";
+                csvData = web.DownloadString($"http://finance.yahoo.com/d/quotes.csv?s={symbols}&f=sl1");
+            }
+            
+            var  arrPrice = new List<string>() ;
+            GetPrices(csvData,arrPrice);
+            return arrPrice;
+        }
+
+
+
         /// <summary>
         /// Updates the existing portfolio item.
         /// </summary>
@@ -78,5 +97,18 @@ namespace PortfolioManagerClient.Controllers
 
             _mediatorService.Create(portfolioItem.PortfolioItemViewModelToPortfolioItem());
         }
+
+        [NonAction]
+        private void GetPrices(string csvData,List<string> arrPrice)
+        {
+            string[] rows = csvData.Replace("\r", "").Split('\n');
+            foreach (string row in rows)
+            {
+                if (string.IsNullOrEmpty(row)) continue;
+                string[] cols = row.Split(',');
+
+                arrPrice.Add(cols[1]);
+            }
+        } 
     }
 }

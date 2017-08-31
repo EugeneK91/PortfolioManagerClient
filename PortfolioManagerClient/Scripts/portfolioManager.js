@@ -3,10 +3,12 @@
     // appends a row to the portfolio items table.
     // @parentSelector: selector to append a row to.
     // @obj: portfolio item object to append.
-    var appendRow = function(parentSelector, obj) {
+    var appendRow = function(parentSelector, obj,price) {
         var tr = $("<tr data-id='" + obj.ItemId + "'></tr>");
         tr.append("<td class='name' >" + obj.Symbol + "</td>");
         tr.append("<td class='name' >" + obj.SharesNumber + "</td>");
+        tr.append("<td class='name' >" + price + "</td>");
+        tr.append("<td class='name' >" + price * obj.SharesNumber + "</td>");
         tr.append("<td><input type='button' class='update-button' value='Update' /><input type='button' class='delete-button' value='Delete' /></td>");
         $(parentSelector).append(tr);
     }
@@ -16,8 +18,28 @@
     // @tasks: array of portfolio items to append.
     var displayPortfolioItems = function(parentSelector, portfolioItems) {
         $(parentSelector).empty();
+        
+        var symbols = '';
+        
+        for (var i = 0; i < portfolioItems.length; i++) {
+            symbols += portfolioItems[i].Symbol + '+';
+        }
+        symbols = symbols.slice(0, -1)
+        var prices='';
+        $.ajax(
+        {
+            async: false,
+            url: "/api/PortfolioItems/GetStocks",
+            contentType: 'application/json',
+            data: { 'symbols': symbols },
+            success: function (response) {
+                prices = response;
+            }
+        });
+
         $.each(portfolioItems, function (i, item) {
-            appendRow(parentSelector, item);
+        
+            appendRow(parentSelector, item, prices[i]);
         });
     };
 
