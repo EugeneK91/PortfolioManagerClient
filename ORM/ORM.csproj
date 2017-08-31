@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="PortfolioDbModel.cs" />
     <Compile Include="PortfolioItem.cs" />
+    <Compile Include="PortfolioOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
