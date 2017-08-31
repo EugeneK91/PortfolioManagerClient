@@ -22,7 +22,7 @@ namespace PortfolioManagerClient.Controllers
         public PortfolioItemsController()
         {
             _mediatorService =  new MediatorService(_usersService.GetOrCreateUser());
-            _portfolioItemViewModel = _mediatorService.GetAllLocal().PortfolioItemsToPortfolioItemViewModels();
+          //  _portfolioItemViewModel = _mediatorService.GetAllLocal().PortfolioItemsToPortfolioItemViewModels();
         }
         /// <summary>
         /// Returns all portfolio items for the current user.
@@ -64,7 +64,12 @@ namespace PortfolioManagerClient.Controllers
             return arrPrice;
         }
 
-
+        [Route("api/PortfolioItems/GetOperation")]
+        public IList<ORM.PortfolioOperation> GetOperation()
+        {
+            var userId = _usersService.GetOrCreateUser();
+            return _mediatorService.GetOperations();
+        }
 
         /// <summary>
         /// Updates the existing portfolio item.
