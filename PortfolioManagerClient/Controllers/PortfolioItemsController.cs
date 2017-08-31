@@ -5,6 +5,7 @@ using PortfolioManagerClient.Services;
 using Proxy;
 using PortfolioManagerClient.Converters;
 using System.Net;
+using System;
 
 namespace PortfolioManagerClient.Controllers
 {
@@ -62,6 +63,46 @@ namespace PortfolioManagerClient.Controllers
             var  arrPrice = new List<string>() ;
             GetPrices(csvData,arrPrice);
             return arrPrice;
+        }
+
+
+        [Route("api/PortfolioItems/GetStockPrices")]
+        public List<object> GetStockPrices(string symbol)
+        {
+            string csvData = string.Empty;
+            // Compose the URL.
+            string url = $"http://www.google.com/finance/historical?output=csv&q={symbol}";
+
+            // Get the web response.
+            using (WebClient web = new WebClient())
+            {
+                try
+                {
+                    csvData = web.DownloadString(url);
+                }
+                catch (Exception ex)
+                {
+
+                    return null;
+                }
+            }
+
+
+            // Get the historical prices.
+            string[] lines = csvData.Split(
+                new char[] { '\r', '\n' },
+                StringSplitOptions.RemoveEmptyEntries);
+            var prices = new List<object>();
+            // Process the lines, skipping the header.
+            for (int i = lines.Length-1; i >= 1; i--)
+            {
+                string line = lines[i];
+
+                prices.Add(new {year= Convert.ToDateTime(line.Split(',')[0]), value= line.Split(',')[4]});
+            }
+
+
+            return prices;//.GetRange(0,30);
         }
 
         [Route("api/PortfolioItems/GetOperation")]

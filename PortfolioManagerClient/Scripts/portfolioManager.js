@@ -5,7 +5,7 @@
     // @obj: portfolio item object to append.
     var appendRow = function (parentSelector, obj, price) {
         var tr = $("<tr data-id='" + obj.ItemId + "'></tr>");
-        tr.append("<td class='name' >" + obj.Symbol + "</td>");
+        tr.append("<td class='name' > <a href='javascript:void(0)'  onclick='loadChart(\"" + obj.Symbol + "\")'>" + obj.Symbol + "</a></td>");
         tr.append("<td class='name' >" + obj.SharesNumber + "</td>");
         tr.append("<td class='name' >" + price + "</td>");
         tr.append("<td class='name' >" + price * obj.SharesNumber + "</td>");
@@ -41,6 +41,7 @@
 
             appendRow(parentSelector, item, prices[i]);
         });
+ 
     };
 
     // starts loading portfolio items from server.
@@ -127,7 +128,51 @@ var operationManager = function () {
     };
 }();
 
+function loadChart(symbol) {
+    $('#chartContainer').empty();
+
+    $.ajax(
+{    async: false,
+    url: "api/PortfolioItems/GetStockPrices",
+    type: "Get",
+    contentType: 'application/json',
+    data: { 'symbol': symbol },//
+    success: function (response) {
+        alert(response == null)
+        if (response == null)
+            $('#chartContainer').append("<center><h1>Data Not Found</h1></center>")
+        createChart(response);
+    }
+});
+}
+
+function createChart(items) {
+
+    new Morris.Area({
+        // ID of the element in which to draw the chart.
+        element: 'chartContainer',
+        // Chart data records -- each entry in this array corresponds to a point on
+        // the chart.
+        data:items,
+        // The name of the data record attribute that contains x-values.
+        xkey: 'year',
+        // A list of names of data record attributes that contain y-values.
+        ykeys: ['value'],
+        // Labels for the ykeys -- will be displayed when you hover over the
+        // chart.
+        labels: ['Value'],
+        fillOpacity: 0.6,
+        hideHover: 'auto',
+        behaveLikeLine: true,
+        resize: true,
+        pointFillColors: ['#ffffff'],
+        pointStrokeColors: ['black'],
+        xLabels:'month'
+    });
+}
+
 $(function () {
+    
     // add new portfolio item button click handler
     $("#newCreate").click(function() {
         var symbol = $('#symbol')[0].value;
